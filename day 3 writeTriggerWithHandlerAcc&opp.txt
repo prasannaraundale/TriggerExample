@@ -1,0 +1,42 @@
+Q 3] Create a field on Account Named (Client Opportunity lookup to Opportunity). 
+	 Once an Account is inserted an opportunity will create with the name of 
+	 the Account and that Opportunity will be the Client Opportunity on the Account.
+
+Ans: preRequisit : create field on Account Object for Lookup ("client Opportunity") in prarent object is Opportunity
+
+
+		1] AccountTrigger
+		trigger AccountTrigger on Account(){
+		if(trigger.isAfter && trigger.isInsert ){
+			accountTriggerHandler.createClientOpportunity(trigger.new);
+		}
+		}
+		
+		2}accountTriggerHandler Class
+		public class accountTriggerHandler{
+			public static void createClientOpportunity(list<Account> accList){
+			list <Opportunity> oppListInsert = new list<Opportunity>();
+			for(Account acc:accList){
+				Opportunity opp= new Opportunity();
+				opp.Name=acc.Name;
+				opp.AccountId= acc.Id;
+				opp.CloseDate= System.today();
+				opp.StageName='Propecting';
+				oppListInsert.add(opp);
+			}
+			if(!oppListInsert.isEmpty()){
+				insert.oppListInsert;
+			}
+			map<Id, Id> oppMap = new map<Id, Id>(); 
+			for(Opportunity opp:oppListInsert){
+				oppMap.put(opp.AccountId, opp.Id );
+			}
+			list<Account> accListUpdate= new list<Account>();
+			for(Account acc:[select Id, Name , client_opportunity__c from Account Where Id IN:oppMap.keySet()])
+				acc.client_opportunity__c=oppMap.get(acc.Id);
+				accListUpdate.add(acc);
+			}
+			if(!accListUpdate.isEmpty()){
+				update.accListUpdate;
+			}
+		}

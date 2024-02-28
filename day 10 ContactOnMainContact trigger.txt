@@ -1,0 +1,40 @@
+Q.10]In the Salesforce Contact object, there is a custom checkbox field named "Main Contact.
+     " When this field is checked for one contact associated with a specific account, 
+	 it should be unchecked for all other contacts linked to the same account. 
+	 Throw an error when a contact is already a main contact for a specific account and 
+	 when you are trying to make more than one contact as main contact .
+	 
+Ans: 
+	
+	1]ContactTrigger 
+		trigger ContactTrigger on Contact(before insert, before update){
+		 if(trigger.isBefore && trigger.isInsert){
+			ContactTriggerHandler.mainContactAssoAccount(trigger.new, null);
+		 }
+		 if(trigger.isBefore && trigger.isUpdate){
+			ContactTriggerHandler.mainContactAssoAccount(trigger.new, trigger.oldMap);
+		 }
+		}
+		
+	2]ContactTriggerHandler Class
+		public Class CotactTriggerHandler{
+			public static void mainContactAssoAccount(list<Contact> conList ,Map<Id, Contact> oldMap){
+				set<Id> accId= new set<Id>()
+				for(Contact con:conList){
+					if((oldMap ==null ||oldMap.get(Contact.id).Main_Contact__c != Contact.Main_Contact__c) && contact.Main_Contact__c){
+          				accId.add(con.AccountId);
+				}
+				}
+			
+				List<Contact> coList=[select id , Name, AccountId, Main_Contact__c from Contact where AccountId IN:accId AND Main_Contact__c= true];
+					
+				if(!coList.isEmpty()){
+				for(Contact con : conList){
+				if(Contact.Main_Contact__c){
+				 con.addError('you Already have 1 Main Contact For This Account');
+				}
+				}
+				}
+					
+			}
+		}

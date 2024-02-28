@@ -1,0 +1,32 @@
+Q2. write a trigger only the system admin user should be able to delete the task.
+Ans : 1] event:before
+	  2}operation:delete
+	  3]object on trigger: task
+	  4}affecting object:  onther object record
+	  5]use field: 
+
+Ans: 1]TaskTrigger
+
+trigger taskdeleteonSYAdTrigger on Task(before delete){
+	if(trigger.isBefore && trigger.isDelete){
+		taskTriggerHandler.preventTask(trigger.old);
+		}
+	}
+
+2]taskTriggerHandler Class
+ public taskTriggerHandler{
+	public static void PreventTask(List<Task> taskList){
+	list<Id> adminIds = new list<Id> ();
+	list<user> adminList =[Select id , name from User where profile.name='System Administrator'];
+			if(!adminList.isEmpty()){
+				for(User u:adminList){
+					adminIds.add(u.Id);
+				}
+			}
+			for(task t:taskList){
+				if(!adminIds.contains(userInfo.getUserId())){
+					t.addError('you do not permission to delete');
+				}
+			}
+ }
+

@@ -1,0 +1,18 @@
+Q1. write a trigger only the system admin user should be able to delete the task.
+Ans : 1] event:before
+	  2}operation:delete
+	  3]object on trigger: task
+	  4}affecting object:  onther object record
+	  5]use field: 
+	  
+	 trigger onlyDeleteRecoSystemAdmin on Task(before delete){
+		Id getId=Userinfo.getProfileId();
+		Profile profileName=[SELECT Id,Name FROM Profile WHERE Id:getId];
+		if(profileName != null){
+			for(Task accDuplication: Trigger.old){
+				if(profileName!='System Administrator'){
+					accDupulication.addError('No Access for Deletion');
+				}
+			}
+			}
+	}

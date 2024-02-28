@@ -1,0 +1,71 @@
+Q.5]Create a field Opportunity amount on Account object and 
+	write a trigger on Opportunity to populate the total sum of 
+	all opportunity Amount on Account Object Opportunity amount field.
+Ans:
+	1]opportunityTrigger
+	trigger opportunityTrigger on Opportunity(after insert ,after update){
+	 if(trigger.isAfter && trigger.isInsert){
+	  opportunityTriggerHandler.getSumOpp(trigger.new);
+	 }
+	 if(trigger.isAfter && trigger.isUpdate){
+	 opportunityTriggerHandler.getSumOpp(trigger.new);
+	 }
+	}
+
+	2]opportunityTriggerHandler Class
+	
+	public class opportunityTriggerHandler {
+    public static void getSumAmount(list<Opportunity> oppList, list<Opportunity> oldlist){
+        set<Id> getAccId = new set<Id>();
+        if(trigger.isAfter && (trigger.isInsert|| trigger.isUndelete)){    
+        for(Opportunity opp:oppList){
+                getAccId.add(opp.AccountId);
+                
+            }
+        }
+        if(trigger.isAfter && (trigger.isUpdate||trigger.isDelete) ){
+         for(Opportunity opp:oldList){
+                getAccId.add(opp.AccountId);
+                
+            }
+            }
+        //list<Account> AccUpdateList= new list<Account>();
+        map<Id, Account> accMap= new Map<Id,Account>();
+        decimal count=0;
+        	if(!getAccId.isEmpty()){
+        		for(Account acc:[select Id, Name, Opportunity_Amount__c,(select Id, Name, Amount from Opportunities) from Account where Id IN:getAccId]){
+         		accMap.put(acc.Id,acc);
+        		}
+        	}
+        if(trigger.isAfter && (trigger.isInsert|| trigger.isUndelete)){  
+            for(Opportunity opp:oppList){
+            if(accMap.containsKey(opp.AccountId)){
+                list<Opportunity> oppNewList=accMap.get(opp.AccountId).Opportunities;
+                for(Opportunity objOpp:oppNewList){
+                    count=count+ objOpp.Amount;
+                    
+                }
+                accMap.get(opp.AccountId).Opportunity_Amount__c=count;
+            }
+          }
+        }
+        if(trigger.isAfter && (trigger.isUpdate||trigger.isDelete) ){  
+            for(Opportunity opp:oldList){
+            if(accMap.containsKey(opp.AccountId)){
+                list<Opportunity> oppNewList=accMap.get(opp.AccountId).Opportunities;
+                for(Opportunity objOpp:oppNewList){
+                    count=count+ objOpp.Amount;
+                    
+                }
+                accMap.get(opp.AccountId).Opportunity_Amount__c=count;
+            }
+          }
+        list<Account> accListUpdate= new list<Account>();
+        accListUpdate.addAll(accMap.values());
+        if(!accListUpdate.isEmpty()){
+            Database.update(accListUpdate, false);
+        }    
+    }
+
+}
+}

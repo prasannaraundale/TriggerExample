@@ -1,0 +1,32 @@
+Q.13]Create the field called "Contact Relationship" checkbox on the Contact Object and 
+	 Create the related object called “Contact Relationship” which is a related list to the Contacts.(Look Up Relationship).
+	 Now logic is when we create contact by checking the Contact Relationship checkbox,
+	 then Contact Relationship will be created automatically for that contact.
+Ans:1] ContactTrigger
+		trigger ContactTrigger on Contact(after insert, after update){
+		if(trigger.isAfter && trigger.isInsert){
+		ContactTriggerHandale.ContactRelationship(Trigger.new, null);
+		}
+		if(trigger.isAfter &&trigger.isUpdate){
+		ContactTriggerHandale.ContactRelationship(Trigger.new, Trigger.oldmap);
+		}
+		}
+		
+	2] ContactTriggerHandler class
+		public class ContactTriggerHandler{
+		public static void contactRelationship(list<contact> conList, map<Contact> oldMap){
+		list<ContactRelationship__c> conRelList= new list<Contact_Relationship__c>(); 
+		for(contact con: conList){
+		if(con.Contact_Relationship__c== 'true'&& oldmap== null){
+		contact_Releationship__c conrel = new Contact_Relationship__c();
+		conrel.Name=con.Name;
+		conrel.Phone = con.Phone;
+		conrel.Email =con.Email;
+		conRelList.add(conrel);
+		}
+		}
+		if(!conList.isEmpty()){
+		update conList;
+		}
+		}
+		}

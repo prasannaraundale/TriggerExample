@@ -1,0 +1,23 @@
+Q.12]Write a Trigger on the Opportunity object in to control the editability of the 'Close Date' field?
+	The 'Close Date' field should be NON-EDITABLE under the following conditions:
+
+
+		1]If the 'Opportunity_Type__c' custom picklist field is set to 'High Value' and the 'StageName' is not 'Closed Won.'
+		2]For Opportunities with a record type of 'Special Opportunity' when the 'Opportunity_Type__c' is set to 'Special Value.'
+Ans:1] opportunityTrigger
+		trigger OpportunityTrigger on Opportunity(before update){
+		if(trigger,isBefore && trigger.isUpdate){
+		OpportunityTriggerHandaler.notChangeCloseDate(trigger.new , trigger.oldmap);
+		} 
+		}
+		
+	2] OpportunityTriggerHandaler Class	
+		public Class OpportunityTriggerHandaler{
+			public static void notChangeCloseDate(list<Opportunity> oppList, Map<id, Opportunity> oldMap){
+				for(Opportunities opp: oppList){
+				if((oldmap.get(opp.id).closeDate != opp.closeDate && opp.Opportunity_Type__c =='High Value' && opp.StageName =='Closed Won' ) ||(opp.RecordTypeId==''&& opp.Opportunity_Type__c=='Special Value'))
+					opp.CloseDate. addError('you can not Edit Close Date');
+				}
+			
+			}
+		}

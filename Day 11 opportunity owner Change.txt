@@ -1,0 +1,37 @@
+Q.11]If location of Opportunity Owner changes , then Change all that owner Opportunities ShippingLocation__c to that location.
+Ans: 1] userTrigger
+		trigger UserTrigger on User(after insert ,after update){
+		if(trigger.isAfter && trigger.isInsert ){
+		UserTriggerHandler.ownerChangeUser(trigger.new, null);
+		}
+		if(trigger.isAfter && trigger.isUpdate ){
+		UserTriggerHandler.ownerChangeUser(trigger.new, trigger.oldMap);
+		}
+		
+		}
+		
+	2]	UserTriggerHandler Class
+		public Class UserTriggerHandler{
+			public static void ownerChangeUser(list<User> ulist, map<id, user> OldMap){
+			Map<id, string> userIds = new map<id, string>();
+				for(user u: ulist){
+					if((oldmap.get(U.id).Country != u.Country){
+			
+					userIds.put(u.Id, u.Country);
+			
+					}
+				}
+			list<Opportunity> OppList =new list<Opportunities>();
+				if(userIds.size()>0){
+					for(Opportunities opp:[Select id , Name, ownerId ,location_c from Opportunity where ownerId IN:userIds.keyset()]){
+						opp.location_c= userid.get(opp.ownerId);
+						oppList.add(opp);
+					}
+				}
+			
+				if(!oppList.isEmpty()){
+					update oppList;
+				}
+			
+			}
+		}

@@ -1,0 +1,50 @@
+Q.4] Create a trigger that sends an email notification to the account owner
+	 if the account's annual revenue exceeds 50K within 30 days
+ans: 
+	1]AccountTrigger
+	 trigger AccountTrigger on Account(after insert, after update){
+		if(trigger.isAfter && trigger.isInsert){
+			annualRevAccountHandler.aMonthRevExceed(trigger.new,null);
+		}
+		if(trigger.isAfter && trigger.isUpdate){
+			annualRevAccountHandler.aMonthRevExceed(trigger.new,trigger.oldMap);
+		}
+	 }
+	 
+	 2]annualRevAccountHandler class
+	 
+	 public class annualRevAccountHandler{
+		public static void aMonthRevExceed(list<Account> accList, map<Id,Account> accMap){
+		 date thirtyDayAgo= System.today()-30;
+		 
+		 set<Id> ownId = new set<Id>();
+			for(Account acc:accList){
+				if((acc.AnnualRevene!=null && acc.AnnualRevene>50000 && acc.CreatedDate >thirtyDayAgo && (accMap==null || accMap.get(acc.Id).AnnualRevene != acc.AnnualRevene )){
+					ownId.add(acc.ownerId)
+				}
+			}
+		 
+		 Map<Id,User> userMap= new Map<Id,User>();
+				if(!ownId.isEmpty()){
+					userMap =new Map<Id, User>([select Id, Name, Email From User Where Id IN:ownId]);
+				}
+		 
+		 List<Messaging.singleEmailMessage> emails = new List<Messaging.singleEmailMessage>(); 
+			if(userMap.size()>0){
+				for(Account acc:accList){
+					if(userMap.containsKey(acc.ownerId)){
+							Messaging.singleEmailMessage email= new messaging.singleEmailMessage();
+							string[] toAddress = new string[](userMap.get(acc.OwnerId).email);
+							email.setToAddresses(toAddress);
+							email.setsubject('');
+							email.setplaintextbody('Dear '+userMap.get(acc.ownerId)+'\n\n the revenue for the below mentioned record is'+
+							'above $50K \n AnnualRevene='+acc.AnnualRevene+'\n RecordId ='+acc.Id+'\n\n best Regards');
+							emails.add(email)
+							Messaging.sendEmail(email);
+					
+					}
+					
+				}
+			}
+		}
+	 }

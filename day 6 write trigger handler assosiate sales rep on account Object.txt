@@ -1,0 +1,32 @@
+Q. 6]Create "Sales Rep" field with the data type(Text) on the Account object When we create the Account record, 
+	 the Account owners will be automatically added to the sales rep field.
+	 When we update the Account owner of the record,
+	 then also the Sales Rep will be automatically updated.
+Ans:- firstly goto setup => object Manager=> account=> field=> new=>text=>'Sales Rep'
+	
+	1] Account Trigger
+	 trigger AccountTrigger on Account(before insert, before update){
+	 if(trigger.isBefore && trigger.isInsert){
+		AccountTriggerHandler.assSaleRepOnAcc(trigger.new);
+	 }
+	 if(trigger.isBefore && trigger.isUpdate){
+	 AccountTriggerHandler.assSaleRepOnAcc(trigger.new);
+	 }
+	 }
+	 
+	2] AccountTriggerHandler class
+	public class AccountTriggerHandler{
+		public static void assSaleRepOnAcc(list<Account> acclist){
+		set<Id> ownId =new set<Id>();
+		for(Account acc:acclist){
+		ownId.add(acc.ownerId);
+		}
+		
+		if(!ownerId.isEmpty()){
+			map<id, user> userMap= new map<id, user>(select id ,name from user where Id IN:ownerID);
+				for(Account acc:accList){
+				acc.Sales_Rep__c=userMap.get(acc.ownerId).Name;
+				}
+			}
+		}
+	}

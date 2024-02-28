@@ -1,0 +1,54 @@
+Q.7]Create a custom field on the Account named 'Total Number of Contacts' and populate the number of contacts 
+	associated with that specific account.
+Ans: firstly goto setup => object Manager=> account=> field=> new=>text=>'Total no Contacts'
+
+	1]contactTrigger
+	  trigger contactTrigger on Contact(after insert, after update, after delete, after undelete){
+		if(trigger.isAfter && trigger.isInsert){
+		 contactTriggerHandler.totalContactonAcc(trigger.new, null);
+		}
+		if(trigger.isAfter && trigger.isUpdate){
+		contactTriggerHandler.totalContactonAcc(trigger.new, trigger.oldMap);
+		}
+		if(trigger.isAfter && trigger.isDelete){
+		contactTriggerHandler.totalContactonAcc(trigger.old , null);
+		}
+		if(trigger.isAfter && trigger.isUndelete){
+		contactTriggerHandler.totalContactonAcc(trigger.new , null);
+		}
+	  }
+	  
+	2]contactTriggerHandler
+	  public Class contactTriggerHandler{
+		public static void totalContactonAcc(list<Contact> conList, Map<Id,Contact> oldMap){
+		
+		set<Id> accIds =new set<Id>();
+		for(Contact ObjCon:conList ){
+		 accIds.add(objCon.AccountId);
+		}
+		
+		map<Id, Account> accMap= new map<Id, Account>();
+		for(Account acc:[select Id, Name,(select id from Contacts) From Account Where Id IN:accIds]){
+		
+		accMap.put(acc.Id,acc);
+		}
+		
+		for(Contact con: conList){
+		if(accMap.containsKey(con.AccountId)){
+		list<contact> conList= accMap.get(con.AccountID).contacts;
+		
+		accMap.get(con.AccountID).Total_Contacts__c=conlist.size();
+		}
+		
+		}
+		list<Account> accList = new list<Account>();
+		if(accMap.size()>0){
+		accList.addAll(accMap.values());
+		}
+	
+		if(!accList.isEmpty()){
+		update accList;
+		}
+	  
+		}	
+	  }

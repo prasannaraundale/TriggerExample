@@ -1,0 +1,30 @@
+practices
+Q1. write a trigger on contact to prevent duplicate records based on contact email & contact phone.
+Ans:= 
+	trigger contactTrigger on Contact(before insert, before update){
+		set<string> conSet= new set<string>();
+		for(Contact objCon:trigger.new){
+			if(objCon.Email!=null && objCon.Phone!=null){
+				conSet.add(objCon.Email);
+				conSet.add(objCon.Phone);
+				}
+		
+		}
+		if(conSet.size()>0){
+			map<string, Contact> conMap= new map<string, Contact>();
+				for(Contact objConRet:[SELECT Id, Name,Email,Phone FROM Contact WHERE phone IN:conSet OR Email IN:conSet]){
+					conMap.put(conObjRet.Phone, conObjRet);
+					conMap.put(conObjRet.Email, conObjRet);
+				}
+		
+			for(Contact objConLog : trigger.new){
+				if(conMap.containsKey(objConLog.Email)){
+					objConLog.Email.addError('This Email already exist');
+				}
+				if(conMap.ContainsKey(objConLog.Phone)){
+					objConLog.Phone.addError('This Phone already exist');
+				}
+			}
+		}
+		
+	}
