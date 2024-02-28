@@ -5,7 +5,7 @@ Ans : 1] event:before
 	  4}afating object: contact old 
 	  5]use field: email, phone.
 	  
-TRIGGER CLASS:
+TRIGGER CLASS:-
 	
 trigger duplicateContact on Contact(before insert, before update){
 	if(trigger.isBefore && trigger.isInsert){
@@ -17,7 +17,7 @@ trigger duplicateContact on Contact(before insert, before update){
 	}
 }
 
-HANDLER CLASS:
+HANDLER CLASS:-
 	public static void CheckingDuplicates(List<Contact> conList, Map<Id, Contact> oldMap){
 		list<Contact> existingContact = [SELECT Id,Name,Phone,Email FROM Contact WHERE (Email !=null OR Phone!=null)];
 		
