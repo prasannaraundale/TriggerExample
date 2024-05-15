@@ -1,0 +1,24 @@
+15]Upon Opportunity Creation if Amount is not null and is greater than 100000 then
+   populate ‘Hot Opportunity’ in description field.
+ans:1]event:
+	2]opertion:
+	3]trigger on object:
+	4]affeting Trigger:
+	
+1}trigger Class :
+trigger OpportunityTrigger on Trigger(before Insert){
+if(trigger.isBefore && trigger.isInsert){
+opportunityHandle.updatingDescription(trigger.new);
+}
+}
+2]handler Class:
+public Class OpportunityHandler{
+public static void updatingDescription(list<Opportunity> oppList){
+for(Opportunity objOpp:oppList){
+if(objOpp.Amount!=null && objopp.Amount> 100000){
+objOpp.Description='Hot Opportunity';
+}
+}
+}
+
+}

@@ -1,0 +1,22 @@
+trigger 6: Upon Account Creation if Industry is not null and having value as ‘Media’ then
+		   populate Rating as Hot.
+ans:1]event:before
+	2]operation:insert
+	3]tigger on object:Account
+	4]Affecting object:Account
+	a]trigger class 
+	trigger accountTrigger on Account(before insert){
+	if(trigger.isInsert && trigger.isBefore){
+		AccountHandler.IndustrySetValue(trigger.new);
+	}
+	}
+	b]handlerClass
+	public Class AccountHandler(
+		public static Void IndustrySetValue(list<Account> accList){
+		for(Account objacc:accList){
+		if(objacc.Industry!=null && objacc.Industry=='Media'){
+		objacc.Rating='Hot';
+		}
+		}
+		}
+	)
