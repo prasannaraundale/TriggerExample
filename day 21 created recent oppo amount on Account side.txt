@@ -1,0 +1,34 @@
+21]Account records should have a field named ‘Recent Opportunity Amount’. It
+should contain the opportunity amount of the latest created opportunity on
+account.
+ans:1}event: after
+	2}operation: insert
+	3}trigger on object:opportunity
+	4}effect on object: account
+
+1]Trigger class
+	triger OpportunityTrigger on Opportunity(after Insert){
+	if(trigger.isInsert){
+		if(trigger.isAfter){
+			OppoTriggerHandler.recentOppoAmt(trigger.new);
+			}
+		}
+	}
+2}HandlerClass
+	public Class OppoTriggerHander{
+		public static void recentOppoAmt(list<Opportunity> oppoList){
+		list<Account> accList= new list<account>();
+		for(Opportunity oppo:oppoList){
+		if(oppo.Amount!=null &&oppo.AccountId!=null){
+				Account acc = new Account();
+				acc.Id = oppo.AccountID;
+				acc.Recent_Opportunity_Amount__c=oppo.Amount;
+				accList.add(acc);
+		}
+		}
+		if(!accList.isEmpty()){
+		update accList;
+		}
+		}
+		
+	}	

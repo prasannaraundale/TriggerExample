@@ -1,0 +1,32 @@
+18] Create a related Opportunity when an Account is created.
+ans:
+	1}event: after
+	2}operation: insert
+	3}trigger on object:Account
+	4}effect on object:Contact
+1}trigger class:
+	trigger accountTrigger on Account(after insert){
+	if(tigger.isInsert){
+	if(trigger.isAfter){
+		AccountTriggerHandler.cratedContact(Trigger.new);
+	}
+	}
+2}handler Class
+		public class AccounttriggerHandler{
+			public static void createdContact(list<Account> accList){
+			list<Contact> conList = new list<Contact>();
+			
+			if(!accList.isEmpty()){
+			for(Account acc: accList){
+			Contact con = new Contact();
+			con.FirstName=acc.Name;
+			con.LastName= acc.name+'test1';
+			con.AccountId=acc.Id;
+			conList.add(con);
+			}
+			}
+			if(!conList.isEmpty()){
+			insert conlist;
+			}
+		}
+		}

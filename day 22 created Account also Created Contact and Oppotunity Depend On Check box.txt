@@ -1,0 +1,48 @@
+22]On Account create two checkbox fields labeled as Contact and Opportunity.
+	Now when a new Account record is created and if a particular Contact or
+	Opportunity checkbox is checked then create that related record. Also
+	Opportunity record should be created only if the Account record Active picklist is
+	populated with a Yes.
+ans:1}event: after
+	2}operation: insert
+	3}trigger on object:account
+	4}effect on object: opportunity, contact
+1]trigger class
+	trigger accountTrigger on Account(after insert){
+		if(trigger.isInsert){
+			if(trigger.isAfter){
+				AccountTriggerHandler.createConAndOppo(Trigger.new);
+			}
+		}
+	}
+
+2]handlerClass
+	public class AccountTriggerHandler{
+		public static void createConAndOppo(list<Account> accList){
+		List<Contact> conList= new List<Contact>();
+		List<Opportunity> oppoList = new List<Opportunity>();
+		for(Account acc:acclist){
+		
+			if(acc.Contact__c){
+				Contact con = new Contact();
+				con.Firstname= acc.Name;
+				con.LastName= acc.Name+' test1';
+				con.AccountId=acc.Id;
+				conList.add(con);
+			}
+			if(acc.Opportunity && acc.Active__c=='Yes'){
+				opportunity oppo = new opportunity();
+				oppo.Firstname=acc.Name+' oppo';
+				oppo.AccountId=acc.Id;
+				oppo.stage='Prospect';
+				oppo.CloseDate=system.today();
+				oppoList.add(oppo);
+			}
+		}
+		if(!conList.isEmpty()){
+				insert conList;
+			}
+		if(!oppoList.isEmpty()){}
+				insert oppoList;
+			}
+	}

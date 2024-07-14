@@ -1,0 +1,37 @@
+27]If the Account phone is updated then populate the phone number on all
+related Contacts (Home Phone field). [Using Map]
+ans:1}event: After
+	2}operation: Update
+	3}trigger on object:Account
+	4}effect on object: Related Contact(Home Phone)
+1]trigger class
+trigger AccountTrigger on Account(after update){
+ if(Trigger.isAfter){
+	if(Trigger.isUpdate){
+			AccountTriggerHandler.populatPhoneRelatedContact(Triggger.new, Trigger.oldMap);
+	}
+  }
+}
+
+2]handlerClass
+	public class AccountTriggerandler{
+		Public static void populatPhoneRelatedContact(List<Account> accList, map<Id,Account> oldMap){
+		 
+		 map<Id,Account> accMap =new map<id, Account>();
+		 
+		 for(Account acc:acclist){
+			if(acc.phone!=null && acc.Phone!=(oldMap.get(acc.Id).Phone &&oldMap!=null)){
+				accMap.add(acc.Id,acc);
+			}
+			}
+		list<Contact> conList =new list<Cotact>();
+			for(Contact con:[select Id , HomePhone,AccountId from Contact where AccountID in:accMap.keySet()]){
+				if(accMap.containsKey(con.AccountID)){
+					con.HomePhone=accMap.get(con.AccountId).Phone;
+					conList.add(con);
+			}
+		}
+		if(!conList.isEmpty()){
+			update conList;
+		}
+	}

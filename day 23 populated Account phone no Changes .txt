@@ -1,0 +1,28 @@
+23]If the Account phone is updated then populate below message in
+	description.
+	Description = Phone is Updated! Old Value : XXX 
+									& New Value : XXX
+ans:1}event: before
+	2}operation: update
+	3}trigger on object:account
+	4}effect on object: Account(Phone)
+1]Trigger Class
+	trigger accountTrigger on Account(before update){
+		if(trigger.isUpdate){
+			if(trigger.isBefore){
+				AccountTriggerHandler.populatedUpdatePhoneValue(trigger.new,trigger.oldMap);
+			}
+		}
+	} 
+2]handler class
+	public class AccountTriggerHandler{
+		public static void populatedUpdatePhoneValue(list<Account> accList,Map<Id, Account> oldMap){
+				
+				
+				for(Account acc:accList){
+					if(acc.Phone!=oldMap.get(acc.Id).Phone){
+					acc.Description='Phone is Update ! old Value is '+oldMap.get(acc.Id).Phone+' and new value is '+acc.Phone;
+					}
+				}
+		}
+	}

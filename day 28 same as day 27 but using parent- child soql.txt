@@ -1,0 +1,38 @@
+28]If the Account phone is updated then populate the phone number on all
+	related Contacts (Home Phone field). [Using Parent-Child SOQL]
+ans:1}event: After
+	2}operation: Update
+	3}trigger on object:Account
+	4}effect on object: Related Contact(Home Phone)[using parent-child Soql]
+1] Trigger Class
+	trigger accountTrigger on Account(after Update){
+		if(Trigger.After){
+			if(Trigger.isUpdate){
+				AccountTriggerHandler.updatedRelatedConHomePhone(Trigger.new, Trigger.oldMap);
+			}
+		}
+	}
+2]HandlerClass
+	public Class AccountTriggerHandler {
+		public static void updatedRelatedConHomePhone(list<Account> accList,map<Id,Account> OldMap){
+		
+		set<Id> accSet =new set<Id>();
+			for(Account acc: accList){
+				if(acc.Phone!=null && acc.Phone!=(oldMap.get(acc.Id).Phone && oldMap != null)){
+				accSet.add(acc.Id);
+				}
+			}
+		
+		list<Contact> conList = new list<Contact>();
+		for(Account acc :[select Id,Name, Phone,(select Id, AccountId,HomePhone from Contacts) from Account where Id In:accSet]){
+				if(acc.Contacts!=null){
+					for(Contact con:acc.contact){
+						con.HomePhone=acc.Phone;
+						conList.Add(con);
+					}
+				}
+			}
+		if(!conList.isEmpty()){
+		update conlist;
+		}
+	}

@@ -1,0 +1,32 @@
+19]Create a related Opportunity when an Account is created.
+ans:
+	1}event: after
+	2}operation: insert
+	3}trigger on object:Account
+	4}effect on object:opportunity
+	
+	1]trigger Class
+		trigger accountTrigger on Account(after insert){
+			if(trigger.isAfter){
+				if(trigger.isInsert){
+					AccountTriggerHandler.createdOpportunity(trigger.new);
+				}
+			}
+		}
+	2]AccountHandlerClass
+	public class AccountHandlerClass{
+		public static void createdOpportunity(list<Account> accList){
+		list<Opportunity> oppoList = new list<Opportunity>();
+			for(Account acc: acclist){
+			Opportunity oppo = new Opportunity();
+			oppo.name=acc.name+' Oppo';
+			oppo.AccountId=acc.Id;
+			oppo.stageName='prospecting';
+			oppo.closeDate=System.today()+30;
+			oppoList.add(oppo);
+		}
+		if(!oppoList.isEmpty()){
+			insert oppolist;
+		}
+		}
+	}

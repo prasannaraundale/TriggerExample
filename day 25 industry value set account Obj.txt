@@ -1,0 +1,35 @@
+25]Upon Account Creation or updation if Industry is not null and having value
+	as ‘Media’ then populate Rating as Hot.
+ans:1}event: before
+	2}operation: insert,update
+	3}trigger on object:account
+	4}effect on object: Account(Industry , Rating).
+1]trigger Class
+	trigger accoundTrigger on Account(before insert,before update){
+		if(Trigger.isBefore){
+			if(Trigger.isInsert){
+			AccountTriggerHandler.CheckIndustryValue(Trigger.new);
+			}
+			if(Trigger.isUpdate){
+			AccountTriggerHandler.CheckIndAndRatingValue(Trigger.new, Trigger.oldMap);
+			}
+		}
+	}
+
+2]Handler Class
+	public Class AccountTriggerHandler{
+		public static void checkIndustryValue(list<Account> accList){
+			for(Account acc:accList){
+				if(acc.Industry==null){
+					acc.addError('Industry Value not filled');
+				}
+			}
+		}
+		public static Void CheckIndAndRatingValue(list<> acclist, map<Id, Account> oldMap){
+			for(Account acc:acclist){
+				if((oldMap==null && acc.Industry=='Media')||(acc.Industry=='Media' && acc.Industry!=oldMap.get(acc.Id).Industry)){
+					acc.Rating = 'Hot';
+				}
+			}
+		}
+	}

@@ -1,0 +1,31 @@
+17] Upon Creation of Position (Custom Object) if it is a New Position and Open Date,
+	Min Pay & Max Pay are not populated then populated them with below values:
+	a. Open Date = Today’s Date
+	b. Min Pay = 10000
+	c. Max Pay = 15000
+ans:
+	1}event: before
+	2}operation: insert
+	3}trigger on object:Position__c
+	4}effect on object:Position__c
+	
+	1] trigger class:
+		trigger positonTrigger on Position__c(before insert){
+			if(trigger.isInsert){
+				if(trigger.isBefore){
+					positionObj.openDateMinAndMaxPay(Trigger.new);
+		  }
+		 }
+		}
+	2] handler class:
+		public class positionObj{
+			public static void 	openDateMinAndMaxPay(List <Position__c> postList){
+				for(Positon__c pos:postList){
+					if(pos.status__c=='New position' && pos.Min_Pay__c==null && pos.Max_Pay__c==null &&pos.Open_Date__c==null){
+						pos.Open_Data__C=system.today();
+						pos.min_Pay__c=10000;
+						Pos.Max_pay__c=15000;
+					}
+				}
+			} 
+		}

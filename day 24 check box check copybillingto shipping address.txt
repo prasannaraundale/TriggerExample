@@ -1,0 +1,31 @@
+24] When an account is inserted or updated and the CopyBillingToShipping
+	checkbox is checked then automatically copy the account billing address
+	into account shipping address.
+ans:1}event: before
+	2}operation: update
+	3}trigger on object:Account
+	4}effect on object: Account(checkBox: CopyBillingToShipping) 
+1]Trigger Class
+	trigger accountTrigger on Account(before update){
+		if(trigger.isUpdate){
+			if(triger.isBefore){
+				AccountTriggerHandle.autoUpdateAddress(Trigger.new, triger.oldMap);
+			}
+		}
+	}
+2]handler Class
+	public Class AccountTriggerHandler{
+		public static void autoUpdateAddress(list<Account>accList, map<Id,Account> oldMap){
+			for(Account acc:acclist){
+				if((oldMap==null || acc.CopyBillingToShipping__c)||(!oldMap.get(acc.Id).CopyBillingToShipping__c &&
+				acc.CopyBillingToShipping__c)){
+					acc.ShippingCity=acc.BillingCity;
+					acc.ShippingCountry=acc.BillingCountry;
+					acc.ShippingPostalCode=acc.BillingPostalCode;
+					acc.ShippingState=acc.BillingState;
+					acc.ShippingStreet=acc.BillingStreet;
+				}
+			}
+		}
+	}
+	

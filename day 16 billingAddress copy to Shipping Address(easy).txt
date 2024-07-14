@@ -1,0 +1,32 @@
+16] When an account inserts and CopyBillingToShipping (Custom Field) checkbox is
+	checked then automatically copy account billing address into account shipping
+	address
+ans:1]event:before
+	2]operation:insert
+	3]trigger on Object:Account
+	4]affecting object:Account (address)
+	
+1]Trigger class:
+	trigger AccountTrigger on Account(before Insert){
+	if(trigger.isInsert && trigger.isBefore){
+	AccountHandler.copyBillingAddress(trigger.new);
+	}
+	}
+2] handle Class
+	public Class AccountHandler{
+		public static void copyBiling Address(list<Account> accList){
+		list<Account> newAcc= new list<Account>();
+			for(Account objAcc :accList){
+				if(objAcc.CopyBillingToShipping && objAcc.BillingCity!= null
+					&& objAcc.BillingCountry!= null && objAcc.BillingPostalCode != null
+					&& objAcc.BillingState != null && objAcc.BillingStreet != null){
+				objAcc.ShippingCity=objAcc.BillingCity;
+				objAcc.ShippingCountry=objAcc.BillingCountry;
+				objAcc.ShippingPostalCode=objAcc.BillingPostalCode;
+				objAcc.ShippingState=objAcc.BillingState;
+				objAcc.ShippingStreet=objAcc.BillingStreet;
+				}
+			}
+			
+		}
+	}

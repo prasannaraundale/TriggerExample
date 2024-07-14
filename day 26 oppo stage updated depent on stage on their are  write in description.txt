@@ -1,0 +1,3 @@
+26]If opportunity Stage is updated upon its creation or update then update
+description as either 'Opp is Closed Lost' or 'Opp is Closed Won' or 'Opp is
+Open'.
